@@ -1,7 +1,7 @@
 import { toBase64Utf8, getRef, createTree, createCommit, updateRef, createBlob, type TreeItem } from '@/lib/github-client'
 import { fileToBase64NoPrefix, hashFileSHA256 } from '@/lib/file-utils'
 import { getAuthToken } from '@/lib/auth'
-import { GITHUB_CONFIG } from '@/consts'
+import { CONTENT_GITHUB_CONFIG as GITHUB_CONFIG } from '@/consts'
 import type { Share } from '../components/share-card'
 import type { LogoItem } from '../components/logo-upload-dialog'
 import { getFileExt } from '@/lib/utils'
@@ -24,7 +24,7 @@ export async function pushShares(params: PushSharesParams): Promise<Share[]> {
 	}
 
 	// 获取认证 token（自动从全局认证状态获取）
-	const token = await getAuthToken()
+	const token = await getAuthToken(GITHUB_CONFIG)
 
 	toast.info('正在获取分支信息...')
 	const refData = await getRef(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, `heads/${GITHUB_CONFIG.BRANCH}`)

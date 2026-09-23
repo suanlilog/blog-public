@@ -1,5 +1,5 @@
 import { toast } from 'sonner'
-import { GITHUB_CONFIG } from '@/consts'
+import { CONTENT_GITHUB_CONFIG as GITHUB_CONFIG } from '@/consts'
 import { getAuthToken } from '@/lib/auth'
 import { createBlob, createCommit, createTree, getRef, listRepoFilesRecursive, toBase64Utf8, type TreeItem, updateRef } from '@/lib/github-client'
 import type { BlogIndexItem } from '@/lib/blog-index'
@@ -8,7 +8,7 @@ export async function saveBlogEdits(originalItems: BlogIndexItem[], nextItems: B
 	const removedSlugs = originalItems.filter(item => !nextItems.some(next => next.slug === item.slug)).map(item => item.slug)
 	const uniqueRemoved = Array.from(new Set(removedSlugs.filter(Boolean)))
 
-	const token = await getAuthToken()
+	const token = await getAuthToken(GITHUB_CONFIG)
 
 	toast.info('正在获取分支信息...')
 	const refData = await getRef(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, `heads/${GITHUB_CONFIG.BRANCH}`)

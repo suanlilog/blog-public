@@ -1,5 +1,5 @@
 {
-	"title": "关于本站",
-	"description": "一个基于 Github 的现代化博客系统",
-	"content": "📦网站基于 Github 仓库完全存储，所有内容版本可控\n\n🚀无后端，无 serverless function，纯静态站点\n\n✏️文章通过可视化 UI 直接编辑并提交到 Github 仓库\n\n🔑所有用户都可以编辑，提交需要 Owner 的 Private Key\n\n## 技术栈\n\n- Next.js\n- React\n- TypeScript\n- Tailwind CSS\n- Motion\n- Github API"
+	"title": "关于算栗工坊",
+	"description": "每个知识点，都值得举个栗子。",
+	"content": "这个站点记录工具、代码、学习和生活里值得慢慢剥开的知识点。\n\n欢迎通过 [GitHub](https://github.com/suanlilog)、[知乎](https://www.zhihu.com/people/suanligongfang) 或 [小红书](https://www.xiaohongshu.com/user/profile/69a24d6d0000000021008a0b) 交流。\n\n邮箱：lzihan1226@163.com"
 }

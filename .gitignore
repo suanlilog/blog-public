@@ -20,6 +20,7 @@
 
 # production
 /build
+content-seed/
 
 # misc
 .DS_Store

@@ -1,10 +1,16 @@
 {
-	"short_name": "",
-	"name": "",
+	"short_name": "算栗工坊",
+	"name": "算栗工坊",
 	"start_url": ".",
 
 	"form_factor": "wide",
 
-	"icons": [],
+	"icons": [
+		{
+			"src": "/favicon.png",
+			"sizes": "any",
+			"type": "image/png"
+		}
+	],
 	"display": "standalone"
 }

@@ -1,39 +1,31 @@
 {
 	"meta": {
-		"title": "YYsuni",
-		"description": "YYsuni 的个人博客，记录前端开发、探索、笔记。前端 UI 更新代码仓库。",
-		"username": "Suni"
+		"title": "算栗工坊",
+		"description": "每个知识点，都值得举个栗子。记录工具、代码、学习和生活。",
+		"username": "算栗"
 	},
 	"theme": {
-		"colorBrand": "#2fcbe7",
-		"colorPrimary": "#5B423F",
-		"colorSecondary": "#8b7667",
-		"colorBrandSecondary": "#eec25e",
-		"colorBg": "#d4e8f3",
+		"colorBrand": "#c27a3a",
+		"colorPrimary": "#2c2c2c",
+		"colorSecondary": "#6b5d4a",
+		"colorBrandSecondary": "#d4944f",
+		"colorBg": "#fdf6e3",
 		"colorBorder": "#ffffff",
-		"colorCard": "#ffffff99",
-		"colorArticle": "#ffffffcc"
+		"colorCard": "#ffffffd1",
+		"colorArticle": "#fffffff0"
 	},
 	"backgroundColors": [
-		"#f7da3987",
-		"#8fdbe9",
-		"#fffef8"
+		"#f5e4c6",
+		"#f0d6ad",
+		"#fffaf0"
 	],
 	"artImages": [
 		{
 			"id": "cat",
 			"url": "/images/art/cat.png"
-		},
-		{
-			"id": "a46372ff45bc5524",
-			"url": "/images/art/a46372ff45bc5524.jpg"
-		},
-		{
-			"id": "1c7b726fe720679b",
-			"url": "/images/art/1c7b726fe720679b.jpg"
 		}
 	],
-	"currentArtImageId": "1c7b726fe720679b",
+	"currentArtImageId": "cat",
 	"backgroundImages": [
 		{
 			"id": "",
@@ -45,23 +37,30 @@
 		{
 			"id": "github",
 			"type": "github",
-			"value": "https://github.com/yysuni",
+			"value": "https://github.com/suanlilog",
 			"label": "Github",
-			"order": 3
+			"order": 1
 		},
 		{
-			"id": "juejin",
-			"type": "juejin",
-			"value": "https://juejin.cn/user/2427311675422382",
-			"label": "稀土掘金",
+			"id": "zhihu",
+			"type": "zhihu",
+			"value": "https://www.zhihu.com/people/suanligongfang",
+			"label": "知乎",
 			"order": 2
+		},
+		{
+			"id": "xiaohongshu",
+			"type": "xiaohongshu",
+			"value": "https://www.xiaohongshu.com/user/profile/69a24d6d0000000021008a0b",
+			"label": "小红书",
+			"order": 3
 		},
 		{
 			"id": "email",
 			"type": "email",
-			"value": "yysuni1001@gmail.com",
+			"value": "lzihan1226@163.com",
 			"label": "",
-			"order": 1
+			"order": 4
 		}
 	],
 	"clockShowSeconds": false,

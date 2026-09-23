@@ -13,9 +13,9 @@ type LikeButtonProps = {
 	delay?: number
 }
 
-const ENDPOINT = 'https://blog-liker.yysuni1001.workers.dev/api/like'
+const ENDPOINT = ''
 
-export default function LikeButton({ slug = 'yysuni', delay, className }: LikeButtonProps) {
+export default function LikeButton({ slug = 'suanlilog', delay, className }: LikeButtonProps) {
 	slug = BLOG_SLUG_KEY + slug
 	const [liked, setLiked] = useState(false)
 	const [show, setShow] = useState(false)
@@ -42,13 +42,13 @@ export default function LikeButton({ slug = 'yysuni', delay, className }: LikeBu
 		return typeof data?.count === 'number' ? data.count : null
 	}, [])
 
-	const { data: fetchedCount, mutate } = useSWR(slug ? `${ENDPOINT}?slug=${encodeURIComponent(slug)}` : null, fetcher, {
+	const { data: fetchedCount, mutate } = useSWR(ENDPOINT && slug ? `${ENDPOINT}?slug=${encodeURIComponent(slug)}` : null, fetcher, {
 		revalidateOnFocus: false,
 		dedupingInterval: 1000 * 10
 	})
 
 	const handleLike = useCallback(async () => {
-		if (!slug) return
+		if (!slug || !ENDPOINT) return
 		setLiked(true)
 		setJustLiked(true)
 
@@ -77,7 +77,7 @@ export default function LikeButton({ slug = 'yysuni', delay, className }: LikeBu
 
 	const count = typeof fetchedCount === 'number' ? fetchedCount : null
 
-	if (show)
+	if (ENDPOINT && show)
 		return (
 			<motion.button
 				initial={{ opacity: 0, scale: 0.6 }}
