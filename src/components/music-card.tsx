@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect, useMemo } from 'react'
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import Card from '@/components/card'
 import { useCenterStore } from '@/hooks/use-center'
 import { useConfigStore } from '../app/(home)/stores/config-store'
@@ -37,29 +37,35 @@ export default function MusicCard() {
 		}
 	}, [isHomePage, center, styles, hiCardStyles, clockCardStyles, calendarCardStyles])
 
-	const startPlayback = () => {
+	const startPlayback = useCallback(() => {
 		const audio = audioRef.current
-		if (!audio) return
-		audio.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false))
-	}
+		if (!audio) return Promise.resolve(false)
+		return audio.play().then(() => {
+			startedFromInteraction.current = true
+			setIsPlaying(true)
+			window.localStorage.setItem('music-autoplay-enabled', 'true')
+			return true
+		}).catch(() => false)
+	}, [])
 
 	useEffect(() => {
 		const audio = new Audio(MUSIC_FILE)
+		audio.autoplay = true
 		audio.loop = true
 		audio.volume = MUSIC_VOLUME
 		audio.preload = 'auto'
 		audioRef.current = audio
 		const updateProgress = () => { if (audio.duration) setProgress((audio.currentTime / audio.duration) * 100) }
+		const retryAutoplay = () => { if (!startedFromInteraction.current) void startPlayback() }
 		audio.addEventListener('timeupdate', updateProgress)
 		audio.addEventListener('loadedmetadata', updateProgress)
-		startPlayback()
+		audio.addEventListener('canplay', retryAutoplay)
+		void startPlayback()
 		const startOnInteraction = () => {
-			if (startedFromInteraction.current) return
-			startedFromInteraction.current = true
-			startPlayback()
+			if (!startedFromInteraction.current) void startPlayback()
 		}
-		window.addEventListener('pointerdown', startOnInteraction, { once: true })
-		window.addEventListener('keydown', startOnInteraction, { once: true })
+		window.addEventListener('pointerdown', startOnInteraction)
+		window.addEventListener('keydown', startOnInteraction)
 		return () => {
 			window.removeEventListener('pointerdown', startOnInteraction)
 			window.removeEventListener('keydown', startOnInteraction)
@@ -67,12 +73,13 @@ export default function MusicCard() {
 			audio.src = ''
 			audio.removeEventListener('timeupdate', updateProgress)
 			audio.removeEventListener('loadedmetadata', updateProgress)
+			audio.removeEventListener('canplay', retryAutoplay)
 			audioRef.current = null
 		}
-	}, [])
+	}, [startPlayback])
 
 	useEffect(() => {
-		if (isPlaying) startPlayback()
+		if (isPlaying) void startPlayback()
 		else audioRef.current?.pause()
 	}, [isPlaying])
 
