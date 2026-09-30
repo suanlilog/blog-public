@@ -21,14 +21,19 @@ type ShareItem = {
 export default function ShareCard() {
 	const center = useCenterStore()
 	const { cardStyles, siteContent } = useConfigStore()
+	const fallbackItems: ShareItem[] = [
+		{ name: '算栗工坊 GitHub', url: 'https://github.com/suanlilog', logo: '/images/avatar.png', description: '算栗工坊的开源代码和博客项目。', tags: ['个人'], stars: 5 },
+		{ name: '算栗工坊博客', url: 'https://www.suanlilog.com', logo: '/images/avatar.png', description: '记录工具、代码、学习和生活里值得慢慢剥开的知识点。', tags: ['个人'], stars: 5 }
+	]
 	const [randomItem, setRandomItem] = useState<ShareItem | null>(null)
 	const styles = cardStyles.shareCard
 	const hiCardStyles = cardStyles.hiCard
 	const socialButtonsStyles = cardStyles.socialButtons
 
 	useEffect(() => {
-		const randomIndex = Math.floor(Math.random() * shareList.length)
-		setRandomItem(shareList[randomIndex])
+		const items = shareList.length > 0 ? shareList : fallbackItems
+		const randomIndex = Math.floor(Math.random() * items.length)
+		setRandomItem(items[randomIndex] as ShareItem)
 	}, [])
 
 	if (!randomItem) {
