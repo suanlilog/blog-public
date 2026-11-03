@@ -106,6 +106,18 @@
 	}
 }
 
+@layer components {
+	.home-page-cards .card {
+		background: color-mix(in srgb, var(--color-card) 78%, transparent);
+		border-color: color-mix(in srgb, var(--color-border) 72%, transparent);
+		backdrop-filter: blur(18px) saturate(145%);
+		-webkit-backdrop-filter: blur(18px) saturate(145%);
+		box-shadow:
+			0 18px 48px -24px rgba(71, 45, 23, 0.22),
+			inset 0 1px 0 rgba(255, 255, 255, 0.58);
+	}
+}
+
 @utility card-rounded {
 	@apply rounded-[40px];
 	@supports (corner-shape: squircle) {

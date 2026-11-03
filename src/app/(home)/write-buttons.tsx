@@ -62,7 +62,9 @@ export default function WriteButton() {
 					whileHover={{ scale: 1.05 }}
 					whileTap={{ scale: 0.95 }}
 					onClick={() => setConfigDialogOpen(true)}
-					className='p-2'>
+					aria-label='打开网站设置'
+					title='网站设置'
+					className='brand-btn h-10 w-10 justify-center p-0'>
 					<DotsSVG className='h-6 w-6' />
 				</motion.button>
 			</motion.div>
