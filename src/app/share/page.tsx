@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { Suspense, useState, useRef, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { motion } from 'motion/react'
 import { toast } from 'sonner'
 import GridView from './grid-view'
@@ -9,12 +10,29 @@ import { pushShares } from './services/push-shares'
 import { useAuthStore } from '@/hooks/use-auth'
 import { useConfigStore } from '@/app/(home)/stores/config-store'
 import initialList from './list.json'
-import type { Share } from './components/share-card'
+import legacyBloggers from '@/app/bloggers/list.json'
+import { mergeLegacyBloggers, type Share, type LegacyBlogger, type WebsiteType, type BloggerStatus } from './types'
 import type { LogoItem } from './components/logo-upload-dialog'
 
+const initialShares = mergeLegacyBloggers(initialList as Share[], legacyBloggers as LegacyBlogger[])
+
 export default function Page() {
-	const [shares, setShares] = useState<Share[]>(initialList as Share[])
-	const [originalShares, setOriginalShares] = useState<Share[]>(initialList as Share[])
+	return (
+		<Suspense fallback={<div className='px-6 pt-24 text-center'>加载网站分享...</div>}>
+			<SharePage />
+		</Suspense>
+	)
+}
+
+function SharePage() {
+	const searchParams = useSearchParams()
+	const requestedType = searchParams.get('type') === 'blog' ? 'blog' : 'tool'
+	const requestedStatus = searchParams.get('status') === 'disconnected' ? 'disconnected' : 'recent'
+	const [shares, setShares] = useState<Share[]>(initialShares)
+	const [originalShares, setOriginalShares] = useState<Share[]>(initialShares)
+	const [selectedType, setSelectedType] = useState<WebsiteType>(requestedType)
+	const [selectedStatus, setSelectedStatus] = useState<BloggerStatus>(requestedStatus)
+	const [filterVersion, setFilterVersion] = useState(0)
 	const [isEditMode, setIsEditMode] = useState(false)
 	const [isSaving, setIsSaving] = useState(false)
 	const [editingShare, setEditingShare] = useState<Share | null>(null)
@@ -26,15 +44,15 @@ export default function Page() {
 	const { siteContent } = useConfigStore()
 	const hideEditButton = siteContent.hideEditButton ?? false
 
-	const handleUpdate = (updatedShare: Share, oldShare: Share, logoItem?: LogoItem) => {
-		setShares(prev => prev.map(s => (s.url === oldShare.url ? updatedShare : s)))
-		if (logoItem) {
-			setLogoItems(prev => {
-				const newMap = new Map(prev)
-				newMap.set(updatedShare.url, logoItem)
-				return newMap
-			})
-		}
+	useEffect(() => {
+		setSelectedType(requestedType)
+		setSelectedStatus(requestedStatus)
+		setFilterVersion(prev => prev + 1)
+	}, [requestedType, requestedStatus])
+
+	const handleEdit = (share: Share) => {
+		setEditingShare(share)
+		setIsCreateDialogOpen(true)
 	}
 
 	const handleAdd = () => {
@@ -43,23 +61,34 @@ export default function Page() {
 	}
 
 	const handleSaveShare = (updatedShare: Share, logoItem?: LogoItem) => {
-		if (editingShare) {
-			setShares(shares.map(s => (s.url === editingShare.url ? updatedShare : s)))
-		} else {
-			setShares([...shares, updatedShare])
+		const duplicate = shares.some(s => s.url !== editingShare?.url && new URL(s.url).href === new URL(updatedShare.url).href)
+		if (duplicate) {
+			toast.error('这个网址已经在列表中')
+			return false
 		}
-		if (logoItem) {
-			setLogoItems(prev => {
-				const newMap = new Map(prev)
-				newMap.set(updatedShare.url, logoItem)
-				return newMap
-			})
-		}
+		setShares(prev => (editingShare ? prev.map(s => (s.url === editingShare.url ? updatedShare : s)) : [...prev, updatedShare]))
+		setLogoItems(prev => {
+			const newMap = new Map(prev)
+			const pendingLogo = logoItem ?? (editingShare ? prev.get(editingShare.url) : undefined)
+			if (editingShare) newMap.delete(editingShare.url)
+			if (pendingLogo && updatedShare.logo.startsWith('blob:')) newMap.set(updatedShare.url, pendingLogo)
+			return newMap
+		})
+		// 确认后切换到条目所在分类，清除旧搜索和标签，避免新条目被筛掉。
+		setSelectedType(updatedShare.type ?? 'tool')
+		setSelectedStatus(updatedShare.status ?? 'recent')
+		setFilterVersion(prev => prev + 1)
+		return true
 	}
 
 	const handleDelete = (share: Share) => {
 		if (confirm(`确定要删除 ${share.name} 吗？`)) {
 			setShares(shares.filter(s => s.url !== share.url))
+			setLogoItems(prev => {
+				const newMap = new Map(prev)
+				newMap.delete(share.url)
+				return newMap
+			})
 		}
 	}
 
@@ -109,6 +138,8 @@ export default function Page() {
 		setShares(originalShares)
 		setLogoItems(new Map())
 		setIsEditMode(false)
+		setIsCreateDialogOpen(false)
+		setEditingShare(null)
 	}
 
 	const buttonText = isAuth ? '保存' : '导入密钥'
@@ -135,13 +166,24 @@ export default function Page() {
 				accept='.pem'
 				className='hidden'
 				onChange={async e => {
-					const f = e.target.files?.[0]
+					const input = e.currentTarget
+					const f = input.files?.[0]
 					if (f) await handleChoosePrivateKey(f)
-					if (e.currentTarget) e.currentTarget.value = ''
+					input.value = ''
 				}}
 			/>
 
-			<GridView shares={shares} isEditMode={isEditMode} onUpdate={handleUpdate} onDelete={handleDelete} />
+			<GridView
+				key={filterVersion}
+				shares={shares}
+				selectedType={selectedType}
+				selectedStatus={selectedStatus}
+				onTypeChange={setSelectedType}
+				onStatusChange={setSelectedStatus}
+				isEditMode={isEditMode && !isSaving}
+				onEdit={handleEdit}
+				onDelete={handleDelete}
+			/>
 
 			<motion.div initial={{ opacity: 0, scale: 0.6 }} animate={{ opacity: 1, scale: 1 }} className='absolute top-4 right-6 flex gap-3 max-sm:hidden'>
 				{isEditMode ? (
@@ -158,6 +200,7 @@ export default function Page() {
 							whileHover={{ scale: 1.05 }}
 							whileTap={{ scale: 0.95 }}
 							onClick={handleAdd}
+							disabled={isSaving}
 							className='rounded-xl border bg-white/60 px-6 py-2 text-sm'>
 							添加
 						</motion.button>
@@ -178,7 +221,15 @@ export default function Page() {
 				)}
 			</motion.div>
 
-			{isCreateDialogOpen && <CreateDialog share={editingShare} onClose={() => setIsCreateDialogOpen(false)} onSave={handleSaveShare} />}
+			{isCreateDialogOpen && (
+				<CreateDialog
+					share={editingShare}
+					defaultType={selectedType}
+					defaultStatus={selectedStatus}
+					onClose={() => setIsCreateDialogOpen(false)}
+					onSave={handleSaveShare}
+				/>
+			)}
 		</>
 	)
 }

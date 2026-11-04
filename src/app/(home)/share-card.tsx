@@ -6,24 +6,33 @@ import { useCenterStore } from '@/hooks/use-center'
 import { useConfigStore } from './stores/config-store'
 import { CARD_SPACING } from '@/consts'
 import shareList from '@/app/share/list.json'
+import legacyBloggers from '@/app/bloggers/list.json'
 import Link from 'next/link'
 import { HomeDraggableLayer } from './home-draggable-layer'
+import { mergeLegacyBloggers, type Share as ShareItem, type LegacyBlogger } from '@/app/share/types'
 
-type ShareItem = {
-	name: string
-	url: string
-	logo: string
-	description: string
-	tags: string[]
-	stars: number
-}
+const websiteList = mergeLegacyBloggers(shareList as ShareItem[], legacyBloggers as LegacyBlogger[])
 
 export default function ShareCard() {
 	const center = useCenterStore()
 	const { cardStyles, siteContent } = useConfigStore()
 	const fallbackItems: ShareItem[] = [
-		{ name: '算栗工坊 GitHub', url: 'https://github.com/suanlilog', logo: '/images/avatar.png', description: '算栗工坊的开源代码和博客项目。', tags: ['个人'], stars: 5 },
-		{ name: '算栗工坊博客', url: 'https://www.suanlilog.com', logo: '/images/avatar.png', description: '记录工具、代码、学习和生活里值得慢慢剥开的知识点。', tags: ['个人'], stars: 5 }
+		{
+			name: '算栗工坊 GitHub',
+			url: 'https://github.com/suanlilog',
+			logo: '/images/avatar.png',
+			description: '算栗工坊的开源代码和博客项目。',
+			tags: ['个人'],
+			stars: 5
+		},
+		{
+			name: '算栗工坊博客',
+			url: 'https://www.suanlilog.com',
+			logo: '/images/avatar.png',
+			description: '记录工具、代码、学习和生活里值得慢慢剥开的知识点。',
+			tags: ['个人'],
+			stars: 5
+		}
 	]
 	const [randomItem, setRandomItem] = useState<ShareItem | null>(null)
 	const styles = cardStyles.shareCard
@@ -31,7 +40,7 @@ export default function ShareCard() {
 	const socialButtonsStyles = cardStyles.socialButtons
 
 	useEffect(() => {
-		const items = shareList.length > 0 ? shareList : fallbackItems
+		const items = websiteList.length > 0 ? websiteList : fallbackItems
 		const randomIndex = Math.floor(Math.random() * items.length)
 		setRandomItem(items[randomIndex] as ShareItem)
 	}, [])
@@ -59,7 +68,7 @@ export default function ShareCard() {
 
 				<h2 className='text-secondary text-sm'>随机推荐</h2>
 
-				<Link href='/share' className='mt-2 block space-y-2'>
+				<Link href={randomItem.type === 'blog' ? `/share?type=blog&status=${randomItem.status ?? 'recent'}` : '/share'} className='mt-2 block space-y-2'>
 					<div className='flex items-center'>
 						<div className='relative mr-3 h-12 w-12 shrink-0 overflow-hidden rounded-xl'>
 							<img src={randomItem.logo} alt={randomItem.name} className='h-full w-full object-contain' />

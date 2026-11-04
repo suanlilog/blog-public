@@ -11,10 +11,10 @@ import ScrollOutlineSVG from '@/svgs/scroll-outline.svg'
 import ScrollFilledSVG from '@/svgs/scroll-filled.svg'
 import ProjectsFilledSVG from '@/svgs/projects-filled.svg'
 import ProjectsOutlineSVG from '@/svgs/projects-outline.svg'
-import AboutFilledSVG from '@/svgs/about-filled.svg'
-import AboutOutlineSVG from '@/svgs/about-outline.svg'
-import ShareFilledSVG from '@/svgs/share-filled.svg'
-import ShareOutlineSVG from '@/svgs/share-outline.svg'
+// import AboutFilledSVG from '@/svgs/about-filled.svg'
+// import AboutOutlineSVG from '@/svgs/about-outline.svg'
+// import ShareFilledSVG from '@/svgs/share-filled.svg'
+// import ShareOutlineSVG from '@/svgs/share-outline.svg'
 import WebsiteFilledSVG from '@/svgs/website-filled.svg'
 import WebsiteOutlineSVG from '@/svgs/website-outline.svg'
 import { usePathname } from 'next/navigation'
@@ -38,22 +38,10 @@ const list = [
 		href: '/projects'
 	},
 	{
-		icon: AboutOutlineSVG,
-		iconActive: AboutFilledSVG,
-		label: '关于网站',
-		href: '/about'
-	},
-	{
-		icon: ShareOutlineSVG,
-		iconActive: ShareFilledSVG,
-		label: '推荐分享',
-		href: '/share'
-	},
-	{
 		icon: WebsiteOutlineSVG,
 		iconActive: WebsiteFilledSVG,
-		label: '优秀博客',
-		href: '/bloggers'
+		label: '网站分享',
+		href: '/share'
 	}
 ]
 
@@ -102,7 +90,7 @@ export default function NavCard() {
 
 	const size = useMemo(() => {
 		if (form === 'mini') return { width: 64, height: 64 }
-		else if (form === 'icons') return { width: 340, height: 64 }
+		else if (form === 'icons') return { width: 24 + 40 + list.length * (28 + 24) + 2, height: 64 }
 		else return { width: styles.width, height: styles.height }
 	}, [form, styles])
 
@@ -119,7 +107,7 @@ export default function NavCard() {
 
 	if (show)
 		return (
-			<HomeDraggableLayer cardKey='navCard' x={position.x} y={position.y} width={styles.width} height={styles.height}>
+			<HomeDraggableLayer cardKey='navCard' x={position.x} y={position.y} width={size.width} height={size.height}>
 				<Card
 					order={styles.order}
 					width={size.width}
@@ -138,10 +126,10 @@ export default function NavCard() {
 						</>
 					)}
 
-					<Link className='flex items-center gap-3' href='/'>
+					<Link className='flex shrink-0 items-center gap-3' href='/' aria-label='返回首页'>
 						<Image src='/images/avatar.png' alt='avatar' width={40} height={40} style={{ boxShadow: ' 0 12px 20px -5px #E2D9CE' }} className='rounded-full' />
 						{form === 'full' && <span className='font-averia mt-1 text-2xl leading-none font-medium'>{siteContent.meta.title}</span>}
-						</Link>
+					</Link>
 
 					{(form === 'full' || form === 'icons') && (
 						<>
@@ -174,6 +162,9 @@ export default function NavCard() {
 									<Link
 										key={item.href}
 										href={item.href}
+										aria-label={item.label}
+										title={item.label}
+										aria-current={pathname === item.href ? 'page' : undefined}
 										className={cn('text-secondary text-md relative z-10 flex items-center gap-3 rounded-full px-5 py-3', form === 'icons' && 'p-0')}
 										onMouseEnter={() => setHoveredIndex(index)}>
 										<div className='flex h-7 w-7 items-center justify-center'>

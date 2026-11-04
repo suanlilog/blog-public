@@ -46,3 +46,4 @@ pnpm deploy        # 部署到 Cloudflare
 - [页面修改指南](docs/change-guide.md)
 - [项目结构](docs/project-structure.md)
 - [内容仓库与部署](docs/content-and-deployment.md)
+- [网站分享：使用和代码说明](docs/website-sharing.md)
