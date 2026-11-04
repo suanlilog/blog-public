@@ -113,6 +113,21 @@ export async function getRef(token: string, owner: string, repo: string, ref: st
 	return { sha: data.object.sha }
 }
 
+export async function getCommitTree(token: string, owner: string, repo: string, commitSha: string): Promise<{ sha: string }> {
+	const res = await fetch(`${GH_API}/repos/${owner}/${repo}/git/commits/${encodeURIComponent(commitSha)}`, {
+		headers: {
+			Authorization: `Bearer ${token}`,
+			Accept: 'application/vnd.github+json',
+			'X-GitHub-Api-Version': '2022-11-28'
+		}
+	})
+	if (res.status === 401) handle401Error()
+	if (res.status === 422) handle422Error()
+	if (!res.ok) throw new Error(`get commit tree failed: ${res.status}`)
+	const data = await res.json()
+	return { sha: data.tree.sha }
+}
+
 export type TreeItem = {
 	path: string
 	mode: '100644' | '100755' | '040000' | '160000' | '120000'

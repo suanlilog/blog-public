@@ -1,1 +1,21 @@
-[]
+[
+  {
+    "name": "TypeScript 文档",
+    "logo": "/images/avatar.png",
+    "url": "https://www.typescriptlang.org/",
+    "description": "学习 TypeScript 的官方文档。",
+    "tags": ["开发"],
+    "stars": 5,
+    "type": "tool"
+  },
+  {
+    "name": "算栗工坊",
+    "logo": "/images/avatar.png",
+    "url": "https://www.suanlilog.com",
+    "description": "记录工具、代码、学习和生活。",
+    "tags": [],
+    "stars": 5,
+    "type": "blog",
+    "status": "recent"
+  }
+]
